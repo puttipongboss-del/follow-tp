@@ -434,51 +434,58 @@ async function loadData(){
 
     function renderTable(data){
 
-      const table =
-        document.getElementById("taskTable");
+  const table =
+    document.getElementById("taskTable");
 
-      table.innerHTML = "";
+  table.innerHTML = "";
 
-      data.forEach(task => {
+  data.forEach(task => {
 
-        const statusClass =
-          task.STATUS === "Waiting" ? "waiting" :
-          task.STATUS === "Review" ? "review" :
-          task.STATUS === "Blocked" ? "blocked" :
-          "completed";
+    const statusClass =
+      task.STATUS === "Waiting" ? "waiting" :
+      task.STATUS === "Review" ? "review" :
+      task.STATUS === "Blocked" ? "blocked" :
+      "completed";
 
-        table.innerHTML += `
-          <tr>
+    table.innerHTML += `
+      <tr>
 
-            <td class="py-4 px-3 rounded-l-2xl font-medium">
-              ${task.TOPIC || "-"}
-            </td>
+        <td class="py-4 px-3 rounded-l-2xl font-medium">
+          ${task.TOPIC || "-"}
+        </td>
 
-            <td class="px-3">
-              ${task.ACTIVITY || "-"}
-            </td>
+        <td class="px-3">
+          ${task.ACTIVITY || "-"}
+        </td>
 
-            <td class="px-3">
-              ${task.MEMBER || "-"}
-            </td>
+        <td class="px-3">
+          ${task.MEMBER || "-"}
+        </td>
 
-            <td class="px-3">
-              ${task["LEAD DAYS"] || 0} Days
-            </td>
+        <td class="px-3 text-slate-300 whitespace-nowrap">
+          ${task.START || "-"}
+        </td>
 
-            <td class="px-3 rounded-r-2xl">
+        <td class="px-3 text-slate-300 whitespace-nowrap">
+          ${task.END || "-"}
+        </td>
 
-              <span class="status-badge ${statusClass}">
-                ${task.STATUS || "-"}
-              </span>
+        <td class="px-3">
+          ${task["LEAD DAYS"] || 0} Days
+        </td>
 
-            </td>
+        <td class="px-3 rounded-r-2xl">
 
-          </tr>
-        `;
-      });
-    }
+          <span class="status-badge ${statusClass}">
+            ${task.STATUS || "-"}
+          </span>
 
+        </td>
+
+      </tr>
+    `;
+  });
+}
     function renderWorkload(data){
 
       const workload = {};
