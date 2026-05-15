@@ -345,25 +345,29 @@
 
     let currentTeam = 'ALL';
 
-    async function loadData(){
+async function loadData(){
 
-      try{
+  try{
 
-        const response = await fetch(API_URL);
-        
-        const json =
-          await response.json();
-        
-        tasks = json.data || [];
-        
-        renderCurrentView();
+    const response =
+      await fetch(API_URL);
 
-      }catch(error){
+    const json =
+      await response.json();
 
-        console.error(error);
+    console.log(json);
 
-      }
-    }
+    // IMPORTANT
+    tasks = json.data || [];
+
+    renderCurrentView();
+
+  }catch(error){
+
+    console.error("LOAD ERROR:", error);
+
+  }
+}
 
     function renderCurrentView(){
 
