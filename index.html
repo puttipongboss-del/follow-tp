@@ -350,9 +350,12 @@
       try{
 
         const response = await fetch(API_URL);
-
-        tasks = await response.json();
-
+        
+        const json =
+          await response.json();
+        
+        tasks = json.data || [];
+        
         renderCurrentView();
 
       }catch(error){
