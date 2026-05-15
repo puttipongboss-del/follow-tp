@@ -1,126 +1,269 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Modern Work Dashboard</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    body {
-      background: #081120;
-      color: white;
-      font-family: Arial, sans-serif;
+
+    body{
+      background:#081120;
+      color:white;
+      font-family:Arial,sans-serif;
+      overflow-x:hidden;
     }
 
-    .glass {
-      background: #101c2e;
-      border: 1px solid #1e293b;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    .glass{
+      background:#101c2e;
+      border:1px solid #1e293b;
+      box-shadow:0 10px 30px rgba(0,0,0,0.3);
     }
 
-    .status-badge {
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: bold;
+    .sidebar{
+      position:fixed;
+      left:0;
+      top:0;
+      width:240px;
+      height:100vh;
+      background:#0f172a;
+      border-right:1px solid #1e293b;
+      padding:30px 20px;
+      z-index:100;
     }
 
-    .waiting {
-      background: rgba(234,179,8,0.2);
-      color: #fde047;
+    .sidebar-title{
+      font-size:24px;
+      font-weight:bold;
+      margin-bottom:30px;
     }
 
-    .review {
-      background: rgba(59,130,246,0.2);
-      color: #93c5fd;
+    .menu-btn{
+      width:100%;
+      background:#172437;
+      border:none;
+      color:white;
+      padding:14px;
+      margin-bottom:12px;
+      border-radius:14px;
+      cursor:pointer;
+      transition:0.2s;
+      text-align:left;
+      font-weight:bold;
     }
 
-    .blocked {
-      background: rgba(239,68,68,0.2);
-      color: #fca5a5;
+    .menu-btn:hover{
+      background:#223552;
     }
 
-    .completed {
-      background: rgba(34,197,94,0.2);
-      color: #86efac;
+    .menu-btn.active{
+      background:#22d3ee;
+      color:#081120;
     }
 
-    table {
-      border-collapse: separate;
-      border-spacing: 0 12px;
+    .main-content{
+      margin-left:240px;
+      padding:30px;
     }
 
-    tbody tr {
-      background: #172437;
-      transition: 0.2s;
+    .status-badge{
+      padding:6px 12px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:bold;
     }
 
-    tbody tr:hover {
-      background: #20314d;
+    .waiting{
+      background:rgba(234,179,8,0.2);
+      color:#fde047;
     }
 
-    .chart-bar {
-      height: 10px;
-      border-radius: 999px;
-      background: #22d3ee;
+    .review{
+      background:rgba(59,130,246,0.2);
+      color:#93c5fd;
     }
+
+    .blocked{
+      background:rgba(239,68,68,0.2);
+      color:#fca5a5;
+    }
+
+    .completed{
+      background:rgba(34,197,94,0.2);
+      color:#86efac;
+    }
+
+    .chart-bar{
+      height:10px;
+      border-radius:999px;
+      background:#22d3ee;
+    }
+
+    table{
+      border-collapse:separate;
+      border-spacing:0 12px;
+    }
+
+    tbody tr{
+      background:#172437;
+      transition:0.2s;
+    }
+
+    tbody tr:hover{
+      background:#20314d;
+    }
+
+    @media(max-width:1024px){
+
+      .sidebar{
+        width:100%;
+        height:auto;
+        position:relative;
+      }
+
+      .main-content{
+        margin-left:0;
+      }
+
+    }
+
   </style>
+
 </head>
 
 <body>
 
-  <div class="max-w-7xl mx-auto p-6">
+  <!-- SIDEBAR -->
+
+  <div class="sidebar">
+
+    <div class="sidebar-title">
+      WORK DASHBOARD
+    </div>
+
+    <button class="menu-btn active" onclick="filterTeam('ALL', this)">
+      📊 Overview
+    </button>
+
+    <button class="menu-btn" onclick="filterTeam('BOSS', this)">
+      👑 BOSS
+    </button>
+
+    <button class="menu-btn" onclick="filterTeam('BUS', this)">
+      👨‍💻 BUS
+    </button>
+
+    <button class="menu-btn" onclick="filterTeam('NING', this)">
+      🛠️ NING
+    </button>
+
+    <button class="menu-btn" onclick="filterTeam('NON', this)">
+      📈 NON
+    </button>
+
+  </div>
+
+  <!-- MAIN -->
+
+  <div class="main-content">
 
     <!-- HEADER -->
+
     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-4">
+
       <div>
-        <h1 class="text-4xl font-bold">WORK STATUS DASHBOARD</h1>
+
+        <h1 id="dashboardTitle" class="text-4xl font-bold">
+          WORK STATUS DASHBOARD
+        </h1>
+
         <p class="text-slate-400 mt-2">
           Production & Engineering Task Tracking
         </p>
+
       </div>
 
       <div class="glass rounded-2xl px-5 py-3">
-        <p class="text-slate-400 text-sm">Last Update</p>
+
+        <p class="text-slate-400 text-sm">
+          Last Update
+        </p>
+
         <p id="lastUpdate" class="font-semibold"></p>
+
       </div>
+
     </div>
 
     <!-- KPI -->
+
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
 
       <div class="glass rounded-3xl p-6">
-        <p class="text-slate-400 text-sm">TOTAL TASKS</p>
-        <h2 id="totalTask" class="text-5xl font-bold mt-4">0</h2>
+
+        <p class="text-slate-400 text-sm">
+          TOTAL TASKS
+        </p>
+
+        <h2 id="totalTask" class="text-5xl font-bold mt-4">
+          0
+        </h2>
+
       </div>
 
       <div class="glass rounded-3xl p-6">
-        <p class="text-slate-400 text-sm">IN PROGRESS</p>
-        <h2 id="inProgress" class="text-5xl font-bold mt-4">0</h2>
+
+        <p class="text-slate-400 text-sm">
+          IN PROGRESS
+        </p>
+
+        <h2 id="inProgress" class="text-5xl font-bold mt-4">
+          0
+        </h2>
+
       </div>
 
       <div class="glass rounded-3xl p-6">
-        <p class="text-slate-400 text-sm">COMPLETED</p>
-        <h2 id="completed" class="text-5xl font-bold mt-4">0</h2>
+
+        <p class="text-slate-400 text-sm">
+          COMPLETED
+        </p>
+
+        <h2 id="completed" class="text-5xl font-bold mt-4">
+          0
+        </h2>
+
       </div>
 
       <div class="glass rounded-3xl p-6">
-        <p class="text-slate-400 text-sm">BLOCKED</p>
-        <h2 id="blocked" class="text-5xl font-bold mt-4">0</h2>
+
+        <p class="text-slate-400 text-sm">
+          BLOCKED
+        </p>
+
+        <h2 id="blocked" class="text-5xl font-bold mt-4">
+          0
+        </h2>
+
       </div>
 
     </div>
 
-    <!-- MAIN CONTENT -->
+    <!-- MAIN GRID -->
+
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
       <!-- TABLE -->
+
       <div class="xl:col-span-2 glass rounded-3xl p-6">
 
         <div class="flex justify-between items-center mb-6">
-          <h2 class="text-2xl font-semibold">Task Overview</h2>
+
+          <h2 class="text-2xl font-semibold">
+            Task Overview
+          </h2>
 
           <input
             type="text"
@@ -128,6 +271,7 @@
             placeholder="Search..."
             class="bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 outline-none"
           />
+
         </div>
 
         <div class="overflow-x-auto">
@@ -135,13 +279,17 @@
           <table class="w-full">
 
             <thead>
+
               <tr class="text-slate-400 text-sm text-left">
+
                 <th class="pb-3">TOPIC</th>
                 <th class="pb-3">ACTIVITY</th>
                 <th class="pb-3">MEMBER</th>
                 <th class="pb-3">LEADTIME</th>
                 <th class="pb-3">STATUS</th>
+
               </tr>
+
             </thead>
 
             <tbody id="taskTable"></tbody>
@@ -149,21 +297,27 @@
           </table>
 
         </div>
+
       </div>
 
       <!-- SIDE -->
+
       <div class="space-y-6">
 
         <!-- WORKLOAD -->
+
         <div class="glass rounded-3xl p-6">
 
-          <h2 class="text-xl font-semibold mb-6">Team Workload</h2>
+          <h2 class="text-xl font-semibold mb-6">
+            Team Workload
+          </h2>
 
           <div id="workloadContainer" class="space-y-5"></div>
 
         </div>
 
-        <!-- STATUS SUMMARY -->
+        <!-- STATUS -->
+
         <div class="glass rounded-3xl p-6">
 
           <h2 class="text-xl font-semibold mb-5">
@@ -182,38 +336,68 @@
 
   <script>
 
-    // =========================================
-    // REPLACE THIS URL WITH YOUR APPS SCRIPT
-    // =========================================
-
     const API_URL =
       "https://script.google.com/macros/s/AKfycbxVfyD_YfCHLNbrokqUflFZUs4mz6_76et9AVJlhOV9htMlnxQ8rezq_1rhF_7tPjc4/exec";
 
     let tasks = [];
 
-    async function loadData() {
+    let currentTeam = 'ALL';
 
-      try {
+    async function loadData(){
+
+      try{
 
         const response = await fetch(API_URL);
 
         tasks = await response.json();
 
-        renderDashboard(tasks);
+        renderCurrentView();
 
-      } catch (error) {
+      }catch(error){
 
         console.error(error);
 
       }
     }
 
-    function renderDashboard(data) {
+    function renderCurrentView(){
+
+      let filtered = tasks;
+
+      if(currentTeam !== 'ALL'){
+
+        filtered =
+          tasks.filter(t => t.TEAM === currentTeam);
+
+      }
+
+      renderDashboard(filtered);
+
+      document.getElementById("dashboardTitle").innerText =
+        currentTeam === 'ALL'
+        ? 'WORK STATUS DASHBOARD'
+        : `${currentTeam} DASHBOARD`;
+
+    }
+
+    function filterTeam(team, button){
+
+      currentTeam = team;
+
+      document
+        .querySelectorAll('.menu-btn')
+        .forEach(btn => btn.classList.remove('active'));
+
+      button.classList.add('active');
+
+      renderCurrentView();
+    }
+
+    function renderDashboard(data){
 
       document.getElementById("lastUpdate").innerText =
         new Date().toLocaleString();
 
-      // KPI
       const total = data.length;
 
       const completed =
@@ -239,9 +423,10 @@
       renderStatus(data);
     }
 
-    function renderTable(data) {
+    function renderTable(data){
 
-      const table = document.getElementById("taskTable");
+      const table =
+        document.getElementById("taskTable");
 
       table.innerHTML = "";
 
@@ -255,6 +440,7 @@
 
         table.innerHTML += `
           <tr>
+
             <td class="py-4 px-3 rounded-l-2xl font-medium">
               ${task.TOPIC || "-"}
             </td>
@@ -272,16 +458,19 @@
             </td>
 
             <td class="px-3 rounded-r-2xl">
+
               <span class="status-badge ${statusClass}">
                 ${task.STATUS || "-"}
               </span>
+
             </td>
+
           </tr>
         `;
       });
     }
 
-    function renderWorkload(data) {
+    function renderWorkload(data){
 
       const workload = {};
 
@@ -291,6 +480,7 @@
 
         workload[member] =
           (workload[member] || 0) + 1;
+
       });
 
       const container =
@@ -303,26 +493,35 @@
         const value = workload[member] * 20;
 
         container.innerHTML += `
+
           <div>
+
             <div class="flex justify-between mb-2">
+
               <span>${member}</span>
+
               <span class="text-slate-400">
                 ${value}%
               </span>
+
             </div>
 
             <div class="w-full h-3 bg-slate-700 rounded-full overflow-hidden">
+
               <div
                 class="chart-bar"
                 style="width:${value}%"
               ></div>
+
             </div>
+
           </div>
+
         `;
       });
     }
 
-    function renderStatus(data) {
+    function renderStatus(data){
 
       const statusMap = {
         Waiting: 0,
@@ -333,10 +532,12 @@
 
       data.forEach(task => {
 
-        if (statusMap[task.STATUS] !== undefined) {
+        if(statusMap[task.STATUS] !== undefined){
 
           statusMap[task.STATUS]++;
+
         }
+
       });
 
       const colors = {
@@ -354,6 +555,7 @@
       Object.keys(statusMap).forEach(status => {
 
         container.innerHTML += `
+
           <div class="flex justify-between items-center">
 
             <div class="flex items-center gap-3">
@@ -369,31 +571,45 @@
             </span>
 
           </div>
+
         `;
       });
     }
 
     // SEARCH
-    document.getElementById("searchInput")
-      .addEventListener("input", function(e) {
+
+    document
+      .getElementById("searchInput")
+      .addEventListener("input", function(e){
 
         const keyword =
           e.target.value.toLowerCase();
 
-        const filtered =
-          tasks.filter(task => {
+        let filtered = tasks;
+
+        if(currentTeam !== 'ALL'){
+
+          filtered =
+            filtered.filter(t =>
+              t.TEAM === currentTeam);
+
+        }
+
+        filtered =
+          filtered.filter(task => {
 
             return JSON.stringify(task)
               .toLowerCase()
               .includes(keyword);
+
           });
 
         renderTable(filtered);
+
       });
 
     loadData();
 
-    // AUTO REFRESH
     setInterval(loadData, 30000);
 
   </script>
