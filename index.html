@@ -243,7 +243,7 @@
           WAITING
         </p>
 
-        <h2 id="blocked" class="text-5xl font-bold mt-4">
+        <h2 id="waiting" class="text-5xl font-bold mt-4">
           0
         </h2>
 
@@ -413,11 +413,13 @@ async function loadData(){
         data.filter(t => t.STATUS === "Completed").length;
 
       const waiting =
-        data.filter(t => t.STATUS === "waiting").length;
+        data.filter(t =>
+          t.STATUS === "Waiting" ||
+          t.STATUS === "Blocked"
+        ).length;
 
       const progress =
         data.filter(t =>
-          t.STATUS === "Waiting" ||
           t.STATUS === "Review" ||
           t.STATUS === "In Progress"
         ).length;
@@ -441,10 +443,14 @@ async function loadData(){
 
   data.forEach(task => {
 
+    const displayStatus =
+      task.STATUS === "Blocked"
+      ? "Waiting"
+      : task.STATUS;
+
     const statusClass =
-      task.STATUS === "Waiting" ? "waiting" :
-      task.STATUS === "Review" ? "review" :
-      task.STATUS === "Blocked" ? "blocked" :
+      displayStatus === "Waiting" ? "waiting" :
+      displayStatus === "Review" ? "review" :
       "completed";
 
     table.innerHTML += `
@@ -477,7 +483,7 @@ async function loadData(){
         <td class="px-3 rounded-r-2xl">
 
           <span class="status-badge ${statusClass}">
-            ${task.STATUS || "-"}
+            ${displayStatus || "-"}
           </span>
 
         </td>
@@ -542,15 +548,19 @@ async function loadData(){
       const statusMap = {
         Waiting: 0,
         Review: 0,
-        Blocked: 0,
         Completed: 0
       };
 
       data.forEach(task => {
 
-        if(statusMap[task.STATUS] !== undefined){
+        const displayStatus =
+          task.STATUS === "Blocked"
+          ? "Waiting"
+          : task.STATUS;
 
-          statusMap[task.STATUS]++;
+        if(statusMap[displayStatus] !== undefined){
+
+          statusMap[displayStatus]++;
 
         }
 
@@ -559,7 +569,6 @@ async function loadData(){
       const colors = {
         Waiting: "bg-yellow-400",
         Review: "bg-blue-400",
-        Blocked: "bg-red-400",
         Completed: "bg-green-400"
       };
 
