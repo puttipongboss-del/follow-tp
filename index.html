@@ -115,6 +115,77 @@
       background:#20314d;
     }
 
+    
+    .clickable-card{
+      cursor:pointer;
+      transition:0.25s;
+    }
+
+    .clickable-card:hover{
+      transform:translateY(-4px);
+      border-color:#22d3ee;
+    }
+
+    .modal{
+      display:none;
+      position:fixed;
+      z-index:9999;
+      left:0;
+      top:0;
+      width:100%;
+      height:100%;
+      background:rgba(0,0,0,0.75);
+      padding:20px;
+    }
+
+    .modal-content{
+      background:#101c2e;
+      width:90%;
+      max-width:900px;
+      margin:40px auto;
+      border-radius:24px;
+      border:1px solid #1e293b;
+      padding:24px;
+      max-height:85vh;
+      overflow-y:auto;
+      color:white;
+      box-shadow:0 10px 40px rgba(0,0,0,0.5);
+    }
+
+    .modal-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:20px;
+    }
+
+    .close-modal{
+      font-size:32px;
+      cursor:pointer;
+      color:#94a3b8;
+    }
+
+    .close-modal:hover{
+      color:white;
+    }
+
+    .detail-card{
+      background:#172437;
+      border:1px solid #24344d;
+      border-radius:18px;
+      padding:18px;
+      margin-bottom:14px;
+    }
+
+    .detail-note{
+      margin-top:10px;
+      color:#fde047;
+      background:rgba(234,179,8,0.12);
+      padding:10px;
+      border-radius:12px;
+    }
+
+
     @media(max-width:1024px){
 
       .sidebar{
@@ -201,7 +272,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
 
-      <div class="glass rounded-3xl p-6">
+      <div class="glass rounded-3xl p-6 clickable-card" onclick="showStatusDetail('ALL')">
 
         <p class="text-slate-400 text-sm">
           TOTAL TASKS
@@ -213,7 +284,7 @@
 
       </div>
 
-      <div class="glass rounded-3xl p-6">
+      <div class="glass rounded-3xl p-6 clickable-card" onclick="showStatusDetail('INPROGRESS')">
 
         <p class="text-slate-400 text-sm">
           IN PROGRESS
@@ -225,7 +296,7 @@
 
       </div>
 
-      <div class="glass rounded-3xl p-6">
+      <div class="glass rounded-3xl p-6 clickable-card" onclick="showStatusDetail('COMPLETED')">
 
         <p class="text-slate-400 text-sm">
           COMPLETED
@@ -237,7 +308,7 @@
 
       </div>
 
-      <div class="glass rounded-3xl p-6">
+      <div class="glass rounded-3xl p-6 clickable-card" onclick="showStatusDetail('WAITING')">
 
         <p class="text-slate-400 text-sm">
           WAITING
@@ -335,6 +406,32 @@
     </div>
 
   </div>
+
+  
+  <!-- DETAIL MODAL -->
+
+  <div id="detailModal" class="modal">
+
+    <div class="modal-content">
+
+      <div class="modal-header">
+
+        <h2 id="modalTitle" class="text-3xl font-bold">
+          TASK DETAIL
+        </h2>
+
+        <span class="close-modal" onclick="closeModal()">
+          &times;
+        </span>
+
+      </div>
+
+      <div id="modalBody"></div>
+
+    </div>
+
+  </div>
+
 
   <script>
 
@@ -632,6 +729,141 @@ async function loadData(){
         renderTable(filtered);
 
       });
+
+
+    function showStatusDetail(type){
+
+      let filtered = tasks;
+
+      if(currentTeam !== 'ALL'){
+
+        filtered = filtered.filter(t =>
+          t.TEAM === currentTeam
+        );
+
+      }
+
+      if(type === 'INPROGRESS'){
+
+        filtered = filtered.filter(t =>
+          t.STATUS === 'Review' ||
+          t.STATUS === 'In Progress'
+        );
+
+      }else if(type === 'COMPLETED'){
+
+        filtered = filtered.filter(t =>
+          t.STATUS === 'Completed'
+        );
+
+      }else if(type === 'WAITING'){
+
+        filtered = filtered.filter(t =>
+          t.STATUS === 'Waiting' ||
+          t.STATUS === 'Blocked'
+        );
+
+      }
+
+      const titleMap = {
+        ALL:'TOTAL TASKS',
+        INPROGRESS:'IN PROGRESS',
+        COMPLETED:'COMPLETED',
+        WAITING:'WAITING'
+      };
+
+      document.getElementById("modalTitle").innerText =
+        titleMap[type] + " DETAIL";
+
+      const modalBody =
+        document.getElementById("modalBody");
+
+      if(filtered.length === 0){
+
+        modalBody.innerHTML = `
+          <div class="detail-card">
+            No task found
+          </div>
+        `;
+
+      }else{
+
+        modalBody.innerHTML =
+          filtered.map(task => `
+
+            <div class="detail-card">
+
+              <div class="flex justify-between items-start gap-4">
+
+                <div>
+
+                  <h3 class="text-xl font-bold mb-2">
+                    ${task.TOPIC || '-'}
+                  </h3>
+
+                  <p class="text-slate-300">
+                    <b>Activity:</b>
+                    ${task.ACTIVITY || '-'}
+                  </p>
+
+                  <p class="text-slate-300 mt-1">
+                    <b>Member:</b>
+                    ${task.MEMBER || '-'}
+                  </p>
+
+                  <p class="text-slate-300 mt-1">
+                    <b>Status:</b>
+                    ${task.STATUS || '-'}
+                  </p>
+
+                  <p class="text-slate-300 mt-1">
+                    <b>Lead Time:</b>
+                    ${task["LEAD DAYS"] || 0} Days
+                  </p>
+
+                </div>
+
+              </div>
+
+              <div class="detail-note">
+
+                <b>NOTE:</b>
+                ${task.NOTE || task.Note || task.note || '-'}
+
+              </div>
+
+            </div>
+
+          `).join('');
+
+      }
+
+      document.getElementById("detailModal").style.display =
+        "block";
+
+    }
+
+    function closeModal(){
+
+      document.getElementById("detailModal").style.display =
+        "none";
+
+    }
+
+    window.onclick = function(event){
+
+      const modal =
+        document.getElementById("detailModal");
+
+      if(event.target === modal){
+
+        closeModal();
+
+      }
+
+    }
+
+
 
     loadData();
 
