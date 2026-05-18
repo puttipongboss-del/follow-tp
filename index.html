@@ -240,7 +240,7 @@
       <div class="glass rounded-3xl p-6">
 
         <p class="text-slate-400 text-sm">
-          BLOCKED
+          WAITING
         </p>
 
         <h2 id="blocked" class="text-5xl font-bold mt-4">
@@ -412,8 +412,8 @@ async function loadData(){
       const completed =
         data.filter(t => t.STATUS === "Completed").length;
 
-      const blocked =
-        data.filter(t => t.STATUS === "Blocked").length;
+      const waiting =
+        data.filter(t => t.STATUS === "waiting").length;
 
       const progress =
         data.filter(t =>
@@ -424,7 +424,7 @@ async function loadData(){
 
       document.getElementById("totalTask").innerText = total;
       document.getElementById("completed").innerText = completed;
-      document.getElementById("blocked").innerText = blocked;
+      document.getElementById("waiting").innerText = waiting;
       document.getElementById("inProgress").innerText = progress;
 
       renderTable(data);
