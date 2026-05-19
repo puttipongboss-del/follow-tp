@@ -10,16 +10,16 @@
   <style>
 
     body{
-      background:#081120;
-      color:white;
+      background:#111827;
+      color:#e2e8f0;
       font-family:Arial,sans-serif;
       overflow-x:hidden;
     }
 
     .glass{
-      background:#101c2e;
-      border:1px solid #1e293b;
-      box-shadow:0 10px 30px rgba(0,0,0,0.3);
+      background:#111827;
+      border:1px solid #243041;
+      box-shadow:0 4px 18px rgba(0,0,0,0.18);
     }
 
     .sidebar{
@@ -59,8 +59,8 @@
     }
 
     .menu-btn.active{
-      background:#22d3ee;
-      color:#081120;
+      background:#3b82f6;
+      color:white;
     }
 
     .main-content{
@@ -76,23 +76,23 @@
     }
 
     .waiting{
-      background:rgba(234,179,8,0.2);
-      color:#fde047;
+      background:rgba(245,158,11,0.12);
+      color:#fbbf24;
     }
 
-    .review{
-      background:rgba(59,130,246,0.2);
-      color:#93c5fd;
+    .inprogress{
+      background:rgba(59,130,246,0.14);
+      color:#60a5fa;
     }
 
     .blocked{
-      background:rgba(239,68,68,0.2);
-      color:#fca5a5;
+      background:rgba(239,68,68,0.12);
+      color:#f87171;
     }
 
     .completed{
-      background:rgba(34,197,94,0.2);
-      color:#86efac;
+      background:rgba(34,197,94,0.12);
+      color:#4ade80;
     }
 
     .chart-bar{
@@ -547,8 +547,10 @@ async function loadData(){
 
     const statusClass =
       displayStatus === "Waiting" ? "waiting" :
-      displayStatus === "Review" ? "review" :
-      "completed";
+      displayStatus === "Review" ||
+      displayStatus === "In Progress"
+        ? "inprogress"
+        : "completed";
 
     table.innerHTML += `
       <tr>
